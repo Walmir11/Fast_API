@@ -58,3 +58,10 @@ async def read_category_author_books(category:str, author:str):
 @app.post('/books/create_book')
 async def create_book(new_book=Body()):
     BOOKS.append(new_book)
+
+@app.put('/books/update_book')
+async def update_book(book_title=Body()):
+    for i in range(len(BOOKS)):
+        if BOOKS[i].get('title').casefold() == book_title.get('title').casefold():
+            BOOKS[i] = book_title
+            return BOOKS[i]
