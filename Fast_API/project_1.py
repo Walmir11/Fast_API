@@ -59,9 +59,27 @@ async def read_category_author_books(category:str, author:str):
 async def create_book(new_book=Body()):
     BOOKS.append(new_book)
 
+# Atualizar um livro, com o método PUT
 @app.put('/books/update_book')
 async def update_book(book_title=Body()):
     for i in range(len(BOOKS)):
         if BOOKS[i].get('title').casefold() == book_title.get('title').casefold():
             BOOKS[i] = book_title
             return BOOKS[i]
+
+# Deletar um livro, com o método DELETE
+@app.delete('/books/delete_book/{book_title}/')
+async  def delete_book(book_title:str):
+    for i in range(len(BOOKS)):
+        if BOOKS[i].get('title').casefold() == book_title.casefold():
+            BOOKS.pop(i)
+            break
+
+# Traz os livros pelo autor
+@app.get('/books/byauthor/{author}')
+async def read_books_author(author:str):
+    books = []
+    for book in BOOKS:
+        if book.get('author').casefold() == author.casefold():
+            books.append(book)
+    return books
