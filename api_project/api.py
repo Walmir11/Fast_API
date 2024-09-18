@@ -5,7 +5,7 @@ import requests
 # Elas permitem que aplicações acessem dados ou funcionalidades de outros serviços.
 
 # 2. APIs REST
-# REST (Representational State Transfer) é um estilo de arquitetura que usa métodos HTTP para realizar operações em recursos.
+# REST (Representational State Transfer) é um estilo de arquitetura que usa métodos HTTP para realizar operações em recursos, são simples, escaláveis.
 print("Exemplo de API REST - Pegando lista de usuários:")
 response = requests.get("https://api.exemplo.com/users")
 print(response.json())  # Suponha que recebemos uma lista de usuários
@@ -92,16 +92,3 @@ headers = {
 }
 response = requests.get("https://api.exemplo.com/meus_dados", headers=headers)
 print(f"Autenticação - Status: {response.status_code}, Dados: {response.json()}")
-
-# 9. Testing APIs
-# Testar APIs é importante para garantir que elas estão funcionando corretamente e retornando os dados esperados.
-# Aqui está um exemplo de teste para a API de usuários.
-print("\nExemplo de Teste de API:")
-
-def test_api_users():
-    response = requests.get("https://api.exemplo.com/users")
-    assert response.status_code == 200  # Verifica se a resposta foi bem-sucedida (200 OK)
-    print("Teste passou! A API de usuários está funcionando.")
-
-# Executa o teste
-test_api_users()
