@@ -5,7 +5,7 @@ import requests
 
 # 2. APIs REST
 # A API REST permite que façamos pedidos de informações ou enviemos dados. Vamos usar a API para obter a lista de usuários.
-print("Exemplo de API REST - Pegando lista de usuários:")
+print("Exemplo de API REST - Pegando lista de usuários: ")
 response = requests.get("https://api.exemplo.com/users")
 print(response.json())  # Suponha que recebemos uma lista de usuários
 
