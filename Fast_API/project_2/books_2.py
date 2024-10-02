@@ -1,7 +1,8 @@
 from datetime import datetime
 from typing import Optional
-from fastapi import FastAPI, Path, Query
+from fastapi import FastAPI, Path, Query, HTTPException
 from pydantic import BaseModel, Field
+from starlette import status
 
 app = FastAPI()
 
@@ -50,33 +51,36 @@ BOOKS = [
     Book(6, 'O Cortiço', 'Aluísio Azevedo', 'O Cortiço é um romance naturalista escrito por Aluísio Azevedo em 1890.', 4, 1890),
 ]
 
-@app.get('/books/')
+@app.get('/books', status_code=status.HTTP_200_OK)
 async def read_books():
     return BOOKS
 
-@app.get('/books/{book_id}')
+@app.get('/books/{book_id}', status_code=status.HTTP_200_OK)
 async def read_book(book_id: int = Path(gt=0)):
     for book in BOOKS:
         if book.id == book_id:
             return book
-    return {'message': 'Book not found'}
+    raise HTTPException(status_code=404, detail='Livro não encontrado')
 
-@app.delete('/book/{book_id}/')
+@app.delete('/book/{book_id}/', status_code=status.HTTP_204_NO_CONTENT)
 async def delete_book(book_id: int = Path(gt=0)):
+    book_change = False
     for i in range(len(BOOKS)):
         if BOOKS[i].id == book_id:
             BOOKS.pop(i)
-            break
+            book_change = True
+    if not book_change:
+        raise HTTPException(status_code=404, detail='Livro não encontrado')
 
-@app.get('/books/{book_rating}/')
-async def read_books_by_rating(book_rating: int = Query(gt=0, lt=6)):
+@app.get('/books/rating/{book_rating}/', status_code=status.HTTP_200_OK)
+async def read_books_by_rating(book_rating: int = Path(gt=0, lt=6)):
     books_rating = []
     for book in BOOKS:
         if book.rating == book_rating:
             books_rating.append(book)
     return books_rating
 
-@app.post('/create_book')
+@app.post('/create_book', status_code=status.HTTP_201_CREATED)
 async def create_book(book_request: BookRequest):
     new_book = Book(**book_request.dict())
     BOOKS.append(find_book_id(new_book))
@@ -88,14 +92,18 @@ def find_book_id(book: Book):
         book.id = 1
     return book
 
-@app.put('/book/update_book')
+@app.put('/book/update_book', status_code=status.HTTP_204_NO_CONTENT)
 async def update_book(book: BookRequest):
+    book_change = False
     for i in range(len(BOOKS)):
         if BOOKS[i].id == book.id:
             BOOKS[i] = book
+            book_change = True
+    if not book_change:
+        raise HTTPException(status_code=404,  detail='Livro não encontrado')
 
-@app.get('/books/published_date/{published_date}')
-async def read_books_by_date(published_date: int = Query(gt=0, lt=datetime.now().year)):
+@app.get('/books/published_date/{published_date}', status_code=status.HTTP_200_OK)
+async def read_books_by_date(published_date: int = Path(gt=0, lt=datetime.now().year)):
     books_published_date = []
     for book in BOOKS:
         if book.published_date == published_date:
